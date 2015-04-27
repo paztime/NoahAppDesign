@@ -1,2 +1,3 @@
-console.log( "hello" );
+console.log( "aloha" );
+
 console.log( "goodbye" );
