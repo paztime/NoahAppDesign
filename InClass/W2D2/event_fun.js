@@ -60,3 +60,32 @@ function mouseClick()
     lastCell = this;
     this.next = null;
 }
+
+function keyPress( ev )
+{
+    var chCode = ( 'charCode' in ev ) ?
+        ev.charCode : ev.keyCode;
+    console.log( "The Unicode character code is: " + chCode );
+    if( chCode == 115 )
+    {
+        /* slower */
+        var tds = document.getElementsByTagName( "td" );
+        for( var i = 0; i < tds.length; i++ )
+        {
+            var td = tds.item( i );
+            td.duration = td.duration * 1.5;
+        }
+    }
+    else if( chCode == 102 )
+    {
+        /* faster */
+        var tds = document.getElementsByTagName( "td" );
+        for( var i = 0; i < tds.length; i++ )
+        {
+            // var td = tds.item( i );
+            var td = tds[ i ]; // <=> tds.i
+            console.log( "td? " + td );
+            td.duration = td.duration / 1.5;
+        }
+    }
+}
