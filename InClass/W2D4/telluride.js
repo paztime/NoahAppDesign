@@ -11,7 +11,8 @@ function listPerformers( req, res )
     db.each( "SELECT NAME FROM PERFORMERS", function( err, row ) {
         console.log( "perf "+row.NAME );
 	resp_text += row.NAME;
-    },
+    });
+    db.close(
 	   function() {
 	       console.log( "Complete! "+resp_text );
 	       resp_text += "</body>" + "</html>";
