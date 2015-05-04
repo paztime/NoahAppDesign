@@ -19,16 +19,19 @@ function listStudents( req, res )
 {
     var db = new sqlite.Database( "school.sqlite" );
     var resp_text = "<!DOCTYPE html>"+
-	"<html>" +
-	"<body>";
+    "<html>" +
+  	"<body>" +
+    "<table>"+
+    "<tbody>"+
+    "<tr>" + "<td>" + "<strong>" + "Students' Name" + "</strong>" +"</td>" + "</tr>";
     db.each( "SELECT NAME FROM STUDENTS", function( err, row ) {
         console.log( "student "+row.NAME );
-	resp_text += "<p>" +row.NAME + "</p>";
+	resp_text += "<tr>" + "<td>" + row.NAME + "</td>" + "<td>";
     });
     db.close(
 	   function() {
 	       console.log( "Complete! "+resp_text );
-	       resp_text += "</body>" + "</html>";
+	       resp_text += "</tbody>" + "</table>" + "</body>" + "</html>";
 	       res.writeHead( 200 );
 	       res.end( resp_text );
 	   } );
@@ -38,16 +41,19 @@ function listTeachers( req, res )
 {
     var db = new sqlite.Database( "school.sqlite" );
     var resp_text = "<!DOCTYPE html>"+
-	"<html>" +
-	"<body>";
+    "<html>" +
+  	"<body>" +
+    "<table>"+
+    "<tbody>"+
+    "<tr>" + "<td>" + "<strong>" + "Teachers Name" + "</strong>" + "</td>" + "</tr>";
     db.each( "SELECT NAME FROM TEACHERS", function( err, row ) {
         console.log( "teacher "+row.NAME );
-	resp_text += "<p>" +row.NAME + "</p>";
+	resp_text += "<tr>" + "<td>" + row.NAME + "</td>" + "<td>";
     });
     db.close(
 	   function() {
 	       console.log( "Complete! "+resp_text );
-	       resp_text += "</body>" + "</html>";
+	       resp_text += "</tbody>" + "</table>" + "</body>" + "</html>";
 	       res.writeHead( 200 );
 	       res.end( resp_text );
 	   } );
@@ -57,16 +63,19 @@ function listClasses( req, res )
 {
     var db = new sqlite.Database( "school.sqlite" );
     var resp_text = "<!DOCTYPE html>"+
-	"<html>" +
-	"<body>";
+    "<html>" +
+  	"<body>" +
+    "<table>"+
+    "<tbody>"+
+    "<tr>" + "<td>" + "<strong>" + "Class Name" + "</strong>" + "</td>" + "</tr>";
     db.each( "SELECT NAME FROM CLASSES", function( err, row ) {
         console.log( "class "+row.NAME );
-	resp_text += "<p>" +row.NAME + "</p>";
+	resp_text += "<tr>" + "<td>" + row.NAME + "</td>" + "<td>";
     });
     db.close(
 	   function() {
 	       console.log( "Complete! "+resp_text );
-	       resp_text += "</body>" + "</html>";
+	       resp_text += "</tbody>" + "</table>" + "</body>" + "</html>";
 	       res.writeHead( 200 );
 	       res.end( resp_text );
 	   } );
@@ -76,20 +85,49 @@ function listEnrollments( req, res )
 {
     var db = new sqlite.Database( "school.sqlite" );
     var resp_text = "<!DOCTYPE html>"+
-	"<html>" +
-	"<body>";
+    "<html>" +
+  	"<body>" +
+    "<table>"+
+    "<tbody>"+
+    "<tr>" + "<td>" + "<strong>" + "Class Name" + "</strong>" + "</td>" + "<td>" + "<strong>" + "Students' Name" + "</strong>" +"</td>" + "</tr>";
     db.each( "SELECT STUDENTS.NAME as sname, * FROM ENROLLMENTS "+
              "JOIN STUDENTS ON STUDENTS.ID = ENROLLMENTS.STUDENTID "+
              "JOIN CLASSES ON CLASSES.ID = ENROLLMENTS.CLASSID",
         function( err, row ) {
             console.log( row );
-	    resp_text += "<p>" + row.NAME + " " +
-                row.sname + "</p>";
+	    resp_text += "<tr>" + "<td>" + row.NAME + "</td>" + "<td>" +
+                row.sname + "</td>" + "</tr>";
         });
     db.close(
 	   function() {
 	       console.log( "Complete! "+resp_text );
-	       resp_text += "</body>" + "</html>";
+	       resp_text += "</tbody>" + "</table>" + "</body>" + "</html>";
+	       res.writeHead( 200 );
+	       res.end( resp_text );
+	   } );
+}
+
+function listTeachingAssignments( req, res )
+{
+    var db = new sqlite.Database( "school.sqlite" );
+    var resp_text = "<!DOCTYPE html>"+
+	"<html>" +
+	"<body>" +
+  "<table>"+
+  "<tbody>"+
+  "<tr>" + "<td>" + "<strong>" + "Teachers Name" + "</strong>" + "</td>" + "<td>" + "<strong>" +"Class Name" + "</strong>" +"</td>" + "</tr>";
+    db.each( "SELECT TEACHERS.NAME as tname, * FROM TEACHINGASSIGNMENTS "+
+             "JOIN TEACHERS ON TEACHERS.ID = TEACHINGASSIGNMENTS.TEACHERID "+
+             "JOIN CLASSES ON CLASSES.ID = TEACHINGASSIGNMENTS.CLASSID",
+        function( err, row ) {
+            console.log( row );
+	    resp_text += "<tr>" + "<td>" + row.NAME + "</td>" + "<td>" +
+                row.tname + "</td>" + "</tr>";
+        });
+    db.close(
+	   function() {
+	       console.log( "Complete! "+resp_text );
+	       resp_text += "</tbody>" + "</table>" + "</body>" + "</html>";
 	       res.writeHead( 200 );
 	       res.end( resp_text );
 	   } );
@@ -101,13 +139,24 @@ function addStudent( req, res )
     console.log( req.url );
     var form_text = req.url.split( "?" )[1];
     var form_inputs = form_text.split( "&" );
-    var stud_input = form_inputs[0].split( "=" );
-    /* stud_input[0] == "student" */
-    //var studyr_input = form_inputs[1].split( "=" );
-    var student  = decodeURIComponent( ( stud_input[1] + '' ).replace( /\+/g, '%20' ) );
-    //var studyear = decodeURIComponent( ( studyr_input[1] + '' ).replace( /\+/g, '%20' ) );
-    //var sql_cmd =  "INSERT INTO STUDENTS ('NAME', 'YEAR') VALUES ('"+student+"', '"+studyear+"')";
-    var sql_cmd =  "INSERT INTO STUDENTS ('NAME') VALUES ('"+student+"')";
+    var studname = null, studyear = null;
+    for( var i = 0; i < form_inputs.length; i++ ) {
+        var inp = form_inputs[i].split( "=" );
+        if( inp[0] == 'studentname' ) {
+            studname = inp[1];
+        }
+        else if( inp[0] == 'studentyear' ) {
+            studyear = inp[1];
+        }
+    }
+    if( studname == null || studyear == null )
+    {
+        res.writeHead( 200 );
+        res.end( "ERROR" );
+        return;
+    }
+    var student  = decodeURIComponent( ( studname + '' ).replace( /\+/g, '%20' ) );
+    var sql_cmd =  "INSERT INTO STUDENTS ('NAME', 'YEAR') VALUES ('"+student+"', '"+studyear+"')";
     db.run( sql_cmd );
     db.close();
     res.writeHead( 200 );
@@ -124,7 +173,12 @@ function addEnrollment( req, res )
     var classid = null, stud = null;
     for( var i = 0; i < form_inputs.length; i++ ) {
         var inp = form_inputs[i].split( "=" );
-        if( inp[0] == 'class' ) {
+        if( inp[1].type != Number) {
+            res.end( "ERROR" );
+            console.log("Must enter an integer.")
+            return;
+        }
+        else if( inp[0] == 'class' ) {
             classid = inp[1];
         }
         else if( inp[0] == 'student' ) {
@@ -147,8 +201,18 @@ function addEnrollment( req, res )
     {
         // ....
     }
-    var sql_cmd = "INSERT INTO ENROLLMENTS ('CLASSID', 'STUDENTID') VALUES ('"+
-       stud_input[1]+"', '"+class_input[1]+"')";
+    var class_exists = false;
+    db.all( "SELECT COUNT(NAME) FROM STUDENTS WHERE ID = "+classid,
+        function( err, rows ) {
+            class_exists = rows[0]['COUNT(NAME)'] == 1;
+        });
+    if( !class_exists )
+    {
+        // ....
+    }
+    var student  = decodeURIComponent( ( stud + '' ).replace( /\+/g, '%20' ) );
+    var classnum  = decodeURIComponent( ( classid + '' ).replace( /\+/g, '%20' ) );
+    var sql_cmd = "INSERT INTO ENROLLMENTS ('CLASSID', 'STUDENTID') VALUES ('"+classnum+"', '"+student+"')";
     db.run( sql_cmd );
     db.close();
     res.writeHead( 200 );
