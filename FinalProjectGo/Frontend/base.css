@@ -1,0 +1,31 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+#glift_display1 {
+  position: relative;
+  width: 100%;
+  height: 500px;
+  /* width:100%; */
+  /* height:100%; */
+}
+body {
+  /* Some experimentation with textures */
+  /* background-image:url('images/sandpaper.png'); */
+  /* background-image:url('images/witewall_3.png'); */
+  background-repeat:repeat;
+}
+#type_selector {
+  float:left;
+  position:relative;
+  z-index:0;
+}
+.zinline {
+  display: inline;
+}
+
+.fl-right {
+  display: inline;
+  float: right;
+  font-size: .75em;
+}

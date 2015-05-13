@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="description" content="A Go Game Client">
+    <meta name="author" content="Luke Elliot and Noah Pazdral">
+    <title>The Game of Go</title>
+  </head>
+  <body>
+    <input id="start_button" type="button" onclick="playerSelection()" value="Start Game">
+    <form>
+      <input id="playername" type="text" value="What's your name?">
+      <select id = "board_size" name="Board Size">
+        <option value="9">9</option>
+        <option value="10">10</option>
+        <option value="11">11</option>
+        <option value="12">12</option>
+        <option value="13">13</option>
+        <option value="14">14</option>
+        <option value="15">15</option>
+        <option value="16">16</option>
+        <option value="17">17</option>
+        <option value="18">18</option>
+        <option value="19">19</option>
+      </select>
+      <input type="button" value="submit" onclick="add()">
+    </form>
+    <div id="game_zone">
+      <p>
+        <div id="page_board" style="height: 500px"></div>
+        <div id="game_stats"></div>
+      </p>
+    </div>
+    <script src="jquery-1.11.3.js"></script>
+    <script src="glift_combined.js"></script>
+    <script src="go_client.js"></script>
+  </body>
+</html>
